@@ -36,3 +36,19 @@ resource "aws_internet_gateway" "terraform-CS" {
     Name = "terraform-eks-CS"
   }
 }
+
+resource "aws_route_table" "terraform-CS" {
+  vpc_id = aws_vpc.terraform-CS.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.terraform-CS.id
+  }
+}
+
+resource "aws_route_table_association" "terraform-CS" {
+  count = 2
+
+  subnet_id      = aws_subnet.terraform-CS.*.id[count.index]
+  route_table_id = aws_route_table.terraform-CS.id
+}
