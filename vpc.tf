@@ -28,3 +28,11 @@ resource "aws_subnet" "terraform-CS" {
     "kubernetes.io/cluster/${var.cluster-name}" = "shared",
   })
 }
+
+resource "aws_internet_gateway" "terraform-CS" {
+  vpc_id = aws_vpc.terraform-CS.id
+
+  tags = {
+    Name = "terraform-eks-CS"
+  }
+}
