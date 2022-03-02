@@ -60,3 +60,18 @@ resource "aws_security_group_rule" "terraform-CS-cluster-ingress-workstation-htt
   to_port           = 443
   type              = "ingress"
 }
+
+resource "aws_eks_cluster" "terraform-CS" {
+  name     = var.cluster-name
+  role_arn = aws_iam_role.terraform-CS-cluster.arn
+
+  vpc_config {
+    security_group_ids = [aws_security_group.terraform-CS-cluster.id]
+    subnet_ids         = aws_subnet.terraform-CS[*].id
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.terraform-CS-cluster-AmazonEKSClusterPolicy,
+    aws_iam_role_policy_attachment.terraform-CS-cluster-AmazonEKSVPCResourceController,
+  ]
+}
