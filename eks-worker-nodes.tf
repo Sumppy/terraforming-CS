@@ -37,3 +37,23 @@ resource "aws_iam_role_policy_attachment" "terraform-CS-node-AmazonEC2ContainerR
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = aws_iam_role.terraform-CS-node.name
 }
+
+resource "aws_eks_node_group" "terraform-CS" {
+  cluster_name    = aws_eks_cluster.terraform-CS.name
+  node_group_name = "terraform-CS"
+  node_role_arn   = aws_iam_role.terraform-CS-node.arn
+  subnet_ids      = aws_subnet.terraform-CS[*].id
+  instance_types = ["t2.micro"]
+
+  scaling_config {
+    desired_size = 1
+    max_size     = 5
+    min_size     = 1
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.terraform-CS-node-AmazonEKSWorkerNodePolicy,
+    aws_iam_role_policy_attachment.terraform-CS-node-AmazonEKS_CNI_Policy,
+    aws_iam_role_policy_attachment.terraform-CS-node-AmazonEC2ContainerRegistryReadOnly,
+  ]
+}
